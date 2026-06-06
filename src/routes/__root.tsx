@@ -8,9 +8,18 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
+import { FilterProvider } from "@/context/FilterContext";
+import Navbar from "@/components/orbit/Navbar";
+import CartDrawer from "@/components/orbit/CartDrawer";
+import WishlistDrawer from "@/components/orbit/WishlistDrawer";
+import FloatingCart from "@/components/orbit/FloatingCart";
+import ScrollProgress from "@/components/orbit/ScrollProgress";
 
 function NotFoundComponent() {
   return (
@@ -77,16 +86,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
+      { title: "OrbitMart — The Future, Delivered." },
       { name: "description", content: "OrbitMart is a futuristic e-commerce store selling space-tech, gadgets, and sci-fi collectibles." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "OrbitMart is a futuristic e-commerce store selling space-tech, gadgets, and sci-fi collectibles." },
+      { name: "author", content: "OrbitMart" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "OrbitMart is a futuristic e-commerce store selling space-tech, gadgets, and sci-fi collectibles." },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -120,8 +124,27 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <CartProvider>
+        <WishlistProvider>
+          <FilterProvider>
+            <ScrollProgress />
+            <Navbar />
+            <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--foreground)] overflow-x-hidden">
+              <Outlet />
+            </div>
+            <CartDrawer />
+            <WishlistDrawer />
+            <FloatingCart />
+            <Toaster
+              position="top-right"
+              theme="dark"
+              toastOptions={{
+                className: "!bg-[rgba(5,8,16,0.9)] !border !border-[rgba(0,245,255,0.3)] !text-white !backdrop-blur-lg",
+              }}
+            />
+          </FilterProvider>
+        </WishlistProvider>
+      </CartProvider>
     </QueryClientProvider>
   );
 }
