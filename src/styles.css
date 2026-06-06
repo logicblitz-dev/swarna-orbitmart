@@ -200,3 +200,27 @@
 
 .scroll-track { animation: scrollX 40s linear infinite; }
 .scroll-track:hover { animation-play-state: paused; }
+
+@keyframes skeletonShimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(0,245,255,0.12) 50%, rgba(255,255,255,0.04) 100%);
+  background-size: 800px 100%;
+  animation: skeletonShimmer 1.4s linear infinite;
+}
+
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.heart-pop { animation: heartPop 0.4s ease-out; }
+
+@keyframes fabPulse {
+  0%,100% { box-shadow: 0 0 30px rgba(0,245,255,0.55); }
+  50% { box-shadow: 0 0 50px rgba(0,245,255,0.95), 0 0 80px rgba(157,0,255,0.5); }
+}
+.fab-pulse { animation: fabPulse 0.9s ease-in-out; }
+

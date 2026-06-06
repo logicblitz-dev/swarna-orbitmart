@@ -1,26 +1,93 @@
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import ProductCard from "./ProductCard";
-import type { Product } from "@/context/CartContext";
+import { products, categories, sortOptions, type CategoryFilter, type SortId } from "@/data/products";
+import { useFilters } from "@/context/FilterContext";
 
-const products: Product[] = [
-  { id: "p1", name: "Nebula Earbuds", desc: "Noise-cancelling with cosmic bass", price: 5000, rating: 5, sale: true, image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=600&q=80" },
-  { id: "p2", name: "Astro Smart Watch", desc: "Track time across time zones", price: 2000, rating: 4, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80" },
-  { id: "p3", name: "Zero-G Desk Lamp", desc: "Levitating magnetic lamp", price: 500, rating: 5, image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&q=80" },
-  { id: "p4", name: "Pulsar Mechanical Keyboard", desc: "RGB tactile switches", price: 200, rating: 5, image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80" },
-  { id: "p5", name: "StarMap AR Glasses", desc: "See constellations in real life", price: 3000, rating: 4, image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=600&q=80" },
-  { id: "p6", name: "Ion Power Bank", desc: "20000mAh solar charging", price: 500, rating: 4, sale: true, image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=600&q=80" },
-  { id: "p7", name: "Lunar Mouse Pad", desc: "XL extended with star chart", price: 300, rating: 5, image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600&q=80" },
-  { id: "p8", name: "Photon LED Strip Kit", desc: "Reactive ambient lighting", price: 200, rating: 4, image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&q=80" },
-];
+function CardSkeleton() {
+  return (
+    <div className="rounded-2xl glass p-5 border border-white/5">
+      <div className="aspect-square rounded-xl mb-4 skeleton-shimmer" />
+      <div className="h-4 w-3/4 rounded skeleton-shimmer mb-2" />
+      <div className="h-3 w-1/2 rounded skeleton-shimmer mb-4" />
+      <div className="h-9 rounded-lg skeleton-shimmer" />
+    </div>
+  );
+}
 
 export default function ProductGrid() {
+  const { query, category, setCategory, sort, setSort } = useFilters();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
+  const filtered = useMemo(() => {
+    let list = products.filter((p) => {
+      if (category !== "All" && p.category !== category) return false;
+      if (query && !p.name.toLowerCase().includes(query.toLowerCase()) && !p.desc.toLowerCase().includes(query.toLowerCase())) return false;
+      return true;
+    });
+    list = [...list];
+    if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
+    else if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
+    else if (sort === "rating") list.sort((a, b) => b.rating - a.rating);
+    return list;
+  }, [query, category, sort]);
+
   return (
     <section id="products" className="py-20 px-6">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-display font-bold mb-3 text-gradient">Launchpad Catalog</h2>
-        <p className="text-[color:var(--foreground)]/60 mb-12">Curated gear from the edge of tomorrow.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((p) => <ProductCard key={p.id} product={p} />)}
+        <p className="text-[color:var(--foreground)]/60 mb-8">Curated gear from the edge of tomorrow.</p>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-10 glass rounded-2xl p-4">
+          <div className="flex flex-wrap gap-2">
+            {categories.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCategory(c as CategoryFilter)}
+                className={`px-4 py-2 rounded-full text-xs uppercase tracking-widest font-display border transition ${
+                  category === c
+                    ? "bg-[color:var(--cyan-accent)]/20 border-[color:var(--cyan-accent)] text-[color:var(--cyan-accent)] glow-cyan"
+                    : "border-white/10 text-white/70 hover:border-[color:var(--cyan-accent)]/40"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs uppercase tracking-widest font-display text-white/50">Sort</label>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortId)}
+              className="bg-[color:var(--background)] border border-[color:var(--cyan-accent)]/30 rounded-full px-4 py-2 text-xs font-display uppercase tracking-widest text-white focus:outline-none focus:border-[color:var(--cyan-accent)]"
+            >
+              {sortOptions.map((o) => (
+                <option key={o.id} value={o.id} className="bg-[color:var(--background)]">{o.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-24 text-center font-display tracking-widest text-lg text-[color:var(--foreground)]/70">
+            No products found in this galaxy 🌌
+          </div>
+        ) : (
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <AnimatePresence mode="popLayout">
+              {filtered.map((p) => <ProductCard key={p.id} product={p} />)}
+            </AnimatePresence>
+          </motion.div>
+        )}
       </div>
     </section>
   );

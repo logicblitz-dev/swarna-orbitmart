@@ -13,7 +13,7 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="py-24 px-6">
+    <section id="newsletter" className="py-24 px-6">
       <div className="max-w-4xl mx-auto text-center glass-strong rounded-3xl p-12 border border-[color:var(--cyan-accent)]/20 relative overflow-hidden">
         <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-[color:var(--violet-accent)]/20 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-[color:var(--cyan-accent)]/20 blur-3xl" />
