@@ -1,29 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CartProvider } from "@/context/CartContext";
+import Navbar from "@/components/orbit/Navbar";
+import Hero from "@/components/orbit/Hero";
+import FeaturedCategories from "@/components/orbit/FeaturedCategories";
+import ProductGrid from "@/components/orbit/ProductGrid";
+import HowItWorks from "@/components/orbit/HowItWorks";
+import Testimonials from "@/components/orbit/Testimonials";
+import Newsletter from "@/components/orbit/Newsletter";
+import Footer from "@/components/orbit/Footer";
+import CartDrawer from "@/components/orbit/CartDrawer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "OrbitMart — The Future, Delivered." },
+      { name: "description", content: "OrbitMart: futuristic space-tech, sci-fi collectibles, and quantum-grade gadgets. The future, delivered." },
+      { property: "og:title", content: "OrbitMart — The Future, Delivered." },
+      { property: "og:description", content: "Cutting-edge consumer electronics and sci-fi collectibles from across the galaxy." },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <CartProvider>
+      <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--foreground)] overflow-x-hidden">
+        <Navbar />
+        <main>
+          <Hero />
+          <FeaturedCategories />
+          <ProductGrid />
+          <HowItWorks />
+          <Testimonials />
+          <Newsletter />
+        </main>
+        <Footer />
+        <CartDrawer />
+      </div>
+    </CartProvider>
   );
 }
