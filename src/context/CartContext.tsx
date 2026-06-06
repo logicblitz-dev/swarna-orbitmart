@@ -1,15 +1,8 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { toast } from "sonner";
+import type { Product } from "@/data/products";
 
-export type Product = {
-  id: string;
-  name: string;
-  desc: string;
-  price: number;
-  rating: number;
-  image: string;
-  sale?: boolean;
-};
-
+export type { Product };
 export type CartItem = Product & { quantity: number };
 
 type CartCtx = {
@@ -19,7 +12,7 @@ type CartCtx = {
   isOpen: boolean;
   open: () => void;
   close: () => void;
-  add: (p: Product) => void;
+  add: (p: Product, qty?: number) => void;
   remove: (id: string) => void;
   setQty: (id: string, q: number) => void;
   clear: () => void;
@@ -31,12 +24,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const add = (p: Product) =>
+  const add = (p: Product, qty: number = 1) => {
     setItems((prev) => {
       const ex = prev.find((i) => i.id === p.id);
-      if (ex) return prev.map((i) => (i.id === p.id ? { ...i, quantity: i.quantity + 1 } : i));
-      return [...prev, { ...p, quantity: 1 }];
+      if (ex) return prev.map((i) => (i.id === p.id ? { ...i, quantity: i.quantity + qty } : i));
+      return [...prev, { ...p, quantity: qty }];
     });
+    toast.success("Added to Cart ✓", {
+      description: p.name,
+      icon: <img src={p.image} alt="" className="w-10 h-10 rounded object-cover" />,
+    });
+  };
   const remove = (id: string) => setItems((p) => p.filter((i) => i.id !== id));
   const setQty = (id: string, q: number) =>
     setItems((p) => (q <= 0 ? p.filter((i) => i.id !== id) : p.map((i) => (i.id === id ? { ...i, quantity: q } : i))));
