@@ -94,7 +94,7 @@ function ProductPage() {
             <div>
               <div className="text-xs uppercase tracking-widest text-white/60 font-display mb-2">Color: {variant}</div>
               <div className="flex flex-wrap gap-2">
-                {product.variants.map((v) => (
+                {product.variants.map((v: string) => (
                   <button
                     key={v}
                     onClick={() => setVariant(v)}
